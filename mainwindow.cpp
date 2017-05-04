@@ -9,9 +9,15 @@ MainWindow::MainWindow(QWidget *parent) :
     DeviceInfo::getInstance()->setDeviceId("KB115-001");
     dialog = new QrcodeDialog(this);
     dialog->show();
+    settingDialog = new SettingDialog(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_actionOptions_triggered()
+{
+    settingDialog->show();
 }

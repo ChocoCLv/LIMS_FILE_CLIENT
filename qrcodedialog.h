@@ -5,7 +5,6 @@
 #include <QString>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include "commmodule.h"
 #include "deviceinfo.h"
 
 namespace Ui {

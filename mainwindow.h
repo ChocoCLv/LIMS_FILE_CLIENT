@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "settingdialog.h"
 #include "qrcodedialog.h"
 #include "deviceinfo.h"
 
@@ -20,6 +21,10 @@ public:
 private:
     Ui::MainWindow *ui;
     QrcodeDialog *dialog;
+    SettingDialog *settingDialog;
+
+public slots:
+    void on_actionOptions_triggered();
 };
 
 #endif // MAINWINDOW_H

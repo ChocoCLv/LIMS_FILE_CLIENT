@@ -13,8 +13,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = LIMS_CLIENT_DESKTOP
 TEMPLATE = app
 
-LIBS += C:\Users\choco\Project\Qt\LIMS_CLIENT_DESKTOP\LIMS_CLIENT_DESKTOP\qrcodelib.lib
-LIBS += C:\Users\choco\Project\Qt\LIMS_CLIENT_DESKTOP\LIMS_CLIENT_DESKTOP\qrcodelib.dll
+LIBS += C:\Users\choco\Project\Qt\LIMS_FILE_CLIENT\LIMS_FILE_CLIENT\qrcodelib.lib
+LIBS += C:\Users\choco\Project\Qt\LIMS_FILE_CLIENT\LIMS_FILE_CLIENT\qrcodelib.dll
 
 
 # The following define makes your compiler emit warnings if you use
@@ -33,15 +33,31 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     qrcodegenerate.cpp \
     qrcodedialog.cpp \
-    commmodule.cpp \
-    deviceinfo.cpp
+    deviceinfo.cpp \
+    client.cpp \
+    clientmanagement.cpp \
+    filemanagement.cpp \
+    filesendtask.cpp \
+    settingdialog.cpp \
+    signalingparsemodule.cpp \
+    filerecvtask.cpp \
+    server.cpp
 
 HEADERS  += mainwindow.h \
     qrcodegenerate.h \
     qrcodedialog.h \
-    commmodule.h \
-    deviceinfo.h
+    deviceinfo.h \
+    client.h \
+    clientmanagement.h \
+    config.h \
+    filemanagement.h \
+    filesendtask.h \
+    settingdialog.h \
+    signalingparsemodule.h \
+    filerecvtask.h \
+    server.h
 
 FORMS    += mainwindow.ui \
     qrcodegenerate.ui \
-    qrcodedialog.ui
+    qrcodedialog.ui \
+    settingdialog.ui
