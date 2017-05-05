@@ -4,8 +4,6 @@ ClientManagement::ClientManagement(QObject *parent) : QObject(parent)
 {
     signalingParseModule = new SignalingParseModule;
     fileManagement = FileManagement::getInstance();
-    connect(signalingParseModule,SIGNAL(clientFound(QHostAddress)),this,SLOT(newClient(QHostAddress)));
-    connect(signalingParseModule,SIGNAL(tempServerJoin(QHostAddress)),this,SLOT(newTempServer(QHostAddress)));
 }
 
 
@@ -15,6 +13,7 @@ void ClientManagement::pushFile(QString clientIp)
     QHostAddress clientAddr;
     clientAddr.setAddress(clientIp);
     client->setClientIp(clientAddr);
+    client->setWorkDir(fileManagement->getWorkDirectory());
     client->setFileList(fileManagement->getCurrentFileList());
     client->prepareDistribute();
 }

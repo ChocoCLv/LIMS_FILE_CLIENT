@@ -23,13 +23,51 @@ FileManagement* FileManagement::getInstance()
 void FileManagement::setWorkDirectory(QString dir)
 {
     workDir = dir;
-    fileList = getFileList(workDir);
+    fileInfoList = getFileList(workDir);
+
+    genFilePathList();
+
+    //测试  即工作空间的所有文件均为项目所需文件
+    setCurrentFileList(relativeFilePathList);
+
     emit workDirUpdated();
+}
+
+//存储的是与工作目录的相对路径
+void FileManagement::setCurrentFileList(QList<QString> fileList)
+{
+    currentFileList = fileList;
+    QList<QString>::iterator i;
+    for(i = currentFileList.begin();i!=currentFileList.end();i++)
+    {
+        QString path = workDir + (*i);
+        QFileInfo fi(path);
+        totalSize += fi.size();
+    }
+}
+
+quint64 FileManagement::getTotalSize()
+{
+    return totalSize;
 }
 
 QString FileManagement::getWorkDirectory()
 {
     return workDir;
+}
+
+
+void FileManagement::genFilePathList()
+{
+    QDir dir(workDir);
+    QFileInfoList::iterator i;
+    i = fileInfoList.begin();
+    for(;i!=fileInfoList.end();i++){
+        QString absoluteFilePath = (*i).absoluteFilePath();
+        QString relativeFilePath = dir.relativeFilePath(absoluteFilePath);
+        totalSize += (*i).size();
+        relativeFilePathList.append(relativeFilePath);
+    }
 }
 
 QFileInfoList FileManagement::getFileList(QString path)

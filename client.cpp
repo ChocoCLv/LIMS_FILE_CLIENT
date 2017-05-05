@@ -15,6 +15,18 @@ void Client::setClientIp(QHostAddress ip)
     clientIp = ip;
 }
 
+void Client::setWorkDir(QString dir)
+{
+    workDir = dir;
+}
+
+void Client::setTotalSize(quint64 size)
+{
+    totalSize = size;
+}
+
+
+
 void Client::setServerIp(QHostAddress ip)
 {
     serverIp = ip;
@@ -40,6 +52,7 @@ void Client::prepareDistribute()
     fileSendTask = new FileSendTask();
     fileSendTask->setClientIp(clientIp);
     fileSendTask->setFileList(fileList);
+    fileSendTask->setWorkDir(workDir);
     connect(fileSendTask->socket,SIGNAL(connected()),this,SLOT(startDistribute()));
     connect(fileSendTask->socket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateSendProgress(quint64)));
     connect(fileSendTask->signaling,SIGNAL(oneFileSendOver(quint64)),this,SLOT(oneFileDistributedOver(quint64)));

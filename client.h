@@ -24,10 +24,13 @@ public:
     void setServerIp(QHostAddress ip);
     void setIsDistributeOver(bool isOver);
     void setFileList(QList<QString> list);
+    void setWorkDir(QString dir);
+    void setTotalSize(quint64 size);
     void prepareDistribute();
     QHostAddress getClientHostAddress();
 
 private:
+    QString workDir;
     FileSendTask *fileSendTask;
     QHostAddress clientIp;               //客户端的IP
     QHostAddress serverIp;               //主服务器为客户端分配的临时服务器的IP
@@ -37,6 +40,7 @@ private:
     int fileDistributedNum;         //已经发送完成的文件数量
     int currentFileSize;            //当前发送的文件总大小
     int currentFileSizeDistributed; //当前文件已经发送的大小
+    quint64 totalSize;
 
 signals:
 
