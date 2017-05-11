@@ -53,7 +53,7 @@ quint64 FileManagement::getTotalSize()
 
 QString FileManagement::getWorkDirectory()
 {
-    return workDir;
+    return workDir ;
 }
 
 

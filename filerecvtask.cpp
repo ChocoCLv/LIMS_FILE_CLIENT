@@ -40,16 +40,21 @@ void FileRecvTask::readSocket()
 
         rcvSize = 0;
         currentFile = new QFile(fileManagement->getWorkDirectory()+currentFileName);
+        qDebug()<<QString("start recv file:%1").arg(currentFileName);
         if(!currentFile->open(QFile::WriteOnly)){
+            qDebug()<<QString("cann't open file:%1").arg(currentFileName);
             return;
         }
         break;
     case FILE_DATA:
         fileBlock.clear();
-        fileBlock = in.device()->read(nextBlockSize-sizeof(dataType));
+        quint32 size;
+        in>>size;
+        fileBlock = in.device()->read(size);
         rcvSize += fileBlock.size();
         totalRecvSize += fileBlock.size();
         currentFile->write(fileBlock);
+        qDebug()<<QString("recv file:%1,has recved %2 bytes").arg(currentFile->fileName()).arg(rcvSize);
         if(rcvSize >= currentFileSize){
             currentFile->close();
             fileNumRecv++;

@@ -2,15 +2,16 @@
 
 Server::Server(QObject *parent) : QTcpServer(parent)
 {
-    fileRecvTask = new FileRecvTask;
+
     this->listen(QHostAddress::Any,FILE_PORT_TCP);
-    connect(fileRecvTask->socket,SIGNAL(readyRead()),
-            this,SLOT(socketReadyRead()));
 }
 
 void Server::incomingConnection(int socketId)
 {
+    fileRecvTask = new FileRecvTask;
     fileRecvTask->socket->setSocketDescriptor(socketId);
+    connect(fileRecvTask->socket,SIGNAL(readyRead()),
+            this,SLOT(socketReadyRead()));
 }
 
 void Server::socketReadyRead()
