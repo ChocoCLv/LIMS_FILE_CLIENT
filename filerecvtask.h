@@ -4,6 +4,7 @@
 
 #include <QFile>
 #include <QTcpSocket>
+#include <QAbstractSocket>
 #include <QObject>
 #include <QHostAddress>
 #include <QSemaphore>
@@ -13,10 +14,11 @@
 #include "config.h"
 #include "filemanagement.h"
 
-class FileRecvTask
+class FileRecvTask:public QObject
 {
+    Q_OBJECT
 public:
-    FileRecvTask();
+    explicit FileRecvTask(QObject *parent = 0);
     void readSocket();
     QTcpSocket *socket;
 
@@ -36,6 +38,9 @@ private:
     QFile *currentFile;
     QByteArray fileBlock;
     FileManagement *fileManagement;
+
+public slots:
+    void socketStateChange(QAbstractSocket::SocketState state);
 };
 
 #endif // FILERECVTASK_H

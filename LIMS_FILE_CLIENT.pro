@@ -54,8 +54,8 @@ HEADERS  += mainwindow.h \
     filesendtask.h \
     settingdialog.h \
     signalingparsemodule.h \
-    filerecvtask.h \
-    server.h
+    server.h \
+    filerecvtask.h
 
 FORMS    += mainwindow.ui \
     qrcodegenerate.ui \

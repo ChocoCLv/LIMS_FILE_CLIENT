@@ -1,6 +1,6 @@
 #include "filerecvtask.h"
 
-FileRecvTask::FileRecvTask()
+FileRecvTask::FileRecvTask(QObject *parent):QObject(parent)
 {
     socket = new QTcpSocket;
     dataType = 0;
@@ -8,6 +8,13 @@ FileRecvTask::FileRecvTask()
     fileNumRecv = 0;
     totalRecvSize = 0;
     fileManagement = FileManagement::getInstance();
+    connect(socket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),
+            this,SLOT(socketStateChange(QAbstractSocket::SocketState)));
+}
+
+void FileRecvTask::socketStateChange(QAbstractSocket::SocketState state)
+{
+    qDebug()<<"socket state:"<<state;
 }
 
 void FileRecvTask::readSocket()
@@ -23,6 +30,7 @@ void FileRecvTask::readSocket()
         return;
     }
     in>>dataType;
+    qDebug()<<QString("get data");
 
     QString filePath;
     QDir fileDir;
