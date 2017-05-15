@@ -6,20 +6,59 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    log = Log::getInstance();
     DeviceInfo::getInstance()->setDeviceId("KB115-001");
     //dialog = new QrcodeDialog(this);
     settingDialog = new SettingDialog(this);
-    server = new Server(this);
-    clientManagement = new ClientManagement(this);
+
     fileManagement = FileManagement::getInstance();
 
     connect(fileManagement,SIGNAL(workDirUpdated()),this,SLOT(updateFileTreeView()));
+    connect(log,SIGNAL(logStr(quint8,QVariant)),this,SLOT(showLog(quint8,QVariant)));
+    connect(log,SIGNAL(logStr(QString)),this,SLOT(showLog(QString)));
 
     //dialog->show();
 
     initFileTreeView();
     readSettings();
     updateFileTreeView();
+    clientManagement = new ClientManagement(this);
+}
+
+void MainWindow::showLog(QString l)
+{
+    showLog(Log::COMMON_LOG,l);
+}
+
+void MainWindow::showLog(quint8 logType, QVariant logContent)
+{
+    switch(logType)
+    {
+    case Log::RECEIVE_FILE_COMPLETE:
+        ui->edtCurrentDownloadFileName->setText(logContent.toString());
+        break;
+    case Log::RECV_SIZE:
+        ui->progressBarCurrentFile->setValue(logContent.toInt());
+        break;
+    case Log::FILE_NAME:
+        ui->edtCurrentDownloadFileName->setText(logContent.toString());
+        break;
+    case Log::FILE_SIZE:
+        ui->progressBarCurrentFile->setMaximum(logContent.toInt());
+        break;
+    case Log::COMMON_LOG:
+        ui->edtLog->append(logContent.toString());
+        break;
+    case Log::TOTAL_SIZE:
+        ui->progressBarTotal->setMaximum(logContent.toInt());
+        break;
+    case Log::TOTAL_SIZE_RECV:
+        ui->progressBarTotal->setValue(logContent.toInt());
+        break;
+    default:
+        ui->edtLog->append(logContent.toString());
+        break;
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -74,4 +113,13 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionOptions_triggered()
 {
     settingDialog->show();
+}
+
+void MainWindow::on_actionShowLog_changed()
+{
+    if(ui->actionShowLog->isChecked()){
+        ui->edtLog->show();
+    }else{
+        ui->edtLog->hide();
+    }
 }

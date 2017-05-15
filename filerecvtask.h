@@ -13,34 +13,42 @@
 
 #include "config.h"
 #include "filemanagement.h"
+#include "log.h"
+
+/**
+ * @brief The FileRecvTask class
+ *  每个接收任务只负责接收一个文件 对应一个sendtask
+ */
 
 class FileRecvTask:public QObject
 {
     Q_OBJECT
 public:
     explicit FileRecvTask(QObject *parent = 0);
-    void readSocket();
+    QThread * getThread();
+    QString getFileName();
     QTcpSocket *socket;
 
 private:
     const static quint8 FILE_NAME = 1;
     const static quint8 FILE_DATA = 2;
-    const static quint8 TASK_INFO = 3;
     quint8 dataType;
     quint16 nextBlockSize;
-    quint16 fileNumTotal;
-    quint16 fileNumRecv;
-    quint64 totalSize;
-    quint64 currentFileSize;
-    QString currentFileName;
+    quint64 fileSize;
+    QString fileName;
     quint64 rcvSize;
-    quint64 totalRecvSize;
-    QFile *currentFile;
+    QThread *thread;
+    QFile *recvFile;
     QByteArray fileBlock;
     FileManagement *fileManagement;
+    Log* log;
 
-public slots:
-    void socketStateChange(QAbstractSocket::SocketState state);
+signals:
+    void taskOver(FileRecvTask*);
+
+private slots:
+    void startRecvTask(int socketId,QThread *t);
+    void readSocket();
 };
 
 #endif // FILERECVTASK_H

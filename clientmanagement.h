@@ -10,6 +10,7 @@
 #include <QMap>
 
 #include "client.h"
+#include "server.h"
 #include "signalingparsemodule.h"
 #include "filemanagement.h"
 
@@ -20,22 +21,27 @@ public:
     explicit ClientManagement(QObject *parent = 0);
 
 private:
-    QQueue<QHostAddress> tempServerIpQueue;
-    QQueue<Client*> clientWaitForServerQueue;
+    Server *server;
+    Client *localClient;
+
+    QString workDir;
 
     void getLocalHostAddress();
+
+    int fileNum;
+    quint64 totalSize;
 
     SignalingParseModule *signalingParseModule;
 
     FileManagement *fileManagement;
 
-
     QHostAddress localHostAddr;
-
 signals:
 
 public slots:
-    void pushFile(QString clientIp);
+    void fileRecvOver(QString fileName);
+    void oneSendTaskOver();
+    void setTaskInfo(int fileNum,quint64 totalSize);
 };
 
 #endif // CLIENTMANAGEMENT_H

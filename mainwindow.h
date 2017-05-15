@@ -13,7 +13,7 @@
 #include "settingdialog.h"
 #include "qrcodedialog.h"
 #include "deviceinfo.h"
-#include "server.h"
+#include "log.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +31,6 @@ private:
     Ui::MainWindow *ui;
     QrcodeDialog *dialog;
     SettingDialog *settingDialog;
-    Server *server;
     ClientManagement *clientManagement;
 
     QDirModel *fileModel;
@@ -40,6 +39,7 @@ private:
     void writeSettings();
     void initFileTreeView();
 
+    Log* log;
 
 protected:
      void closeEvent(QCloseEvent *event);
@@ -47,6 +47,11 @@ protected:
 public slots:
     void on_actionOptions_triggered();
     void updateFileTreeView();
+    void showLog(quint8 logType, QVariant logContent);
+    void showLog(QString l);
+private slots:
+
+    void on_actionShowLog_changed();
 };
 
 #endif // MAINWINDOW_H

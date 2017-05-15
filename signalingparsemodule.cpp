@@ -42,25 +42,30 @@ void SignalingParseModule::processSignaling(QByteArray signaling, QHostAddress a
     QString signalingType = jo.find("SIGNALING_TYPE").value().toString();
     if(signalingType == "PUSH_FILE_TO_CLIENT"){
         QString clientIp = jo.find("CLIENT_IP").value().toString();
-        emit pushFile(clientIp);
+        QString fileName = jo.find("FILE_NAME").value().toString();
+        emit pushFile(clientIp,fileName);
     }if(signalingType == "ARE_YOU_OK"){
-        replyHello(addr);
+        serverIpAddr = addr;
+        int fileNum = jo.find("FILE_NUM").value().toInt();
+        quint64 totalSize = jo.find("FILE_TOTAL_SIZE").value().toVariant().toULongLong();
+        emit getTaskInfo(fileNum,totalSize);
+        replyHello();
     }
 }
 
-void SignalingParseModule::replyHello(QHostAddress addr)
+void SignalingParseModule::replyHello()
 {
     QJsonObject jo;
     QJsonDocument jd;
     jo.insert("SIGNALING_TYPE","I_AM_ALIVE");
     jd.setObject(jo);
 
-    udpSocket->writeDatagram(jd.toJson(),addr,SERVER_SIGNALING_PORT_UDP);
+    udpSocket->writeDatagram(jd.toJson(),serverIpAddr,SERVER_SIGNALING_PORT_UDP);
 }
 
-void SignalingParseModule::sendSignaling(QJsonObject s, QHostAddress dst)
+void SignalingParseModule::sendSignaling(QJsonObject s)
 {
     QJsonDocument jd;
     jd.setObject(s);
-    udpSocket->writeDatagram(jd.toJson(),dst,CLIENT_SIGNALING_PORT_UDP);
+    udpSocket->writeDatagram(jd.toJson(),serverIpAddr,SERVER_SIGNALING_PORT_UDP);
 }

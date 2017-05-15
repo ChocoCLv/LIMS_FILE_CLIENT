@@ -1,27 +1,11 @@
 #include "filesendtask.h"
 
-FileSendTask::FileSendTask() : QRunnable()
+FileSendTask::FileSendTask(QObject *parent) : QObject(parent)
 {
-    socket = new QTcpSocket();
-    signaling = new Signaling();
-    sem.release(1);
-
-    fileNum = 0;
-    fileDistributedNum = 0;
-    currentFileSize = 0;
-    currentFileSizeDistributed = 0;
-    numBytesSend = 0;
-}
-
-void FileSendTask::setClientIp(QHostAddress ip)
-{
-    clientIp = ip;
-}
-
-void FileSendTask::setFileList(QList<QString> list)
-{
-    fileList = list;
-    fileNum = list.size();
+    log = Log::getInstance();
+    fileSize = 0;
+    fileSizeDistributed = 0;
+    sndFile = new QFile;
 }
 
 void FileSendTask::setWorkDir(QString dir)
@@ -29,88 +13,84 @@ void FileSendTask::setWorkDir(QString dir)
     workDir = dir;
 }
 
-
-void FileSendTask::run()
+void FileSendTask::setClientIp(QHostAddress ip)
 {
-    sem.release(1);
-    sendReady();
-    foreach (QString filePath, fileList) {
-        //一个文件发送完毕
-        sendFile(filePath);
-        delete currentSendFile;
+    clientIp = ip;
+}
+
+void FileSendTask::setFileName(QString fn)
+{
+    fileName = fn;
+}
+
+void FileSendTask::startTask()
+{
+    openFileRead(fileName);
+}
+
+void FileSendTask::updateSendProgress(qint64 numBytes)
+{
+    sendFileData();
+}
+
+void FileSendTask::sendFileData()
+{
+    emit log->logStr(QString("send file:%1,file total size:%2,send size:%3").arg(sndFile->fileName()).
+                     arg(fileSize).arg(fileSizeDistributed));
+    fileBlock = sndFile->read(SEND_BUFF_SIZE);
+    if(fileBlock.size()==0){
+        emit log->logStr(QString("file:%1 send complete").arg(sndFile->fileName()));
+
+        sndFile->close();
+        emit taskOver();
+        return;
     }
-}
+    sndBlock.clear();
+    QDataStream out(&sndBlock,QIODevice::WriteOnly);
+    out<<quint16(0)<<FILE_DATA<<fileBlock;
+    out.device()->seek(0);
+    out<<quint16(sndBlock.size()-sizeof(quint16));
 
-void FileSendTask::setTotalSize(quint64 size)
-{
-    totalSize = size;
-}
-
-void FileSendTask::sendFile(QString filePath)
-{
-    openFileRead(filePath);
-    //发送时
-    while(1){
-        currentFileSizeDistributed += numBytesSend;
-        if(currentFileSizeDistributed >= currentFileSize){
-            return;
-        }
-        fileBlock = currentSendFile->read(1024);
-        QDataStream out(&sndBlock,QIODevice::WriteOnly);
-        out<<FILE_DATA<<fileBlock.size()<<fileBlock;
-
-        //等待成功发送的信号
-        sem.acquire(1);
-        socket->write(sndBlock);
-    }
-}
-
-void FileSendTask::updateSendProgress(quint64 numBytes)
-{
-    numBytesSend = numBytes;
-    sem.release(1);
+    socket->write(sndBlock);
 }
 
 void FileSendTask::connectToClient()
 {
+    socket = new QTcpSocket();
+    connect(socket,SIGNAL(connected()),this,SLOT(startTask()));
+    connect(socket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateSendProgress(qint64)));
     socket->connectToHost(clientIp,FILE_PORT_TCP);
 }
 
 void FileSendTask::openFileRead(QString rFilePath)
 {
-    QString aFilePath = workDir + rFilePath;
-    currentSendFile = new QFile(aFilePath);
+    QString aFilePath = workDir +  rFilePath;
+    sndFile->setFileName(aFilePath);
     QFileInfo fi = QFileInfo(aFilePath);
-    quint64 nextFileSize = fi.size();
-    emit signaling->oneFileSendOver(nextFileSize);
-    if(!currentSendFile->open(QFile::ReadOnly)){
-        qDebug()<<"open file error-read"<<endl;
+
+    if(!sndFile->open(QFile::ReadOnly)){
+        emit log->logStr(QString("open %1,error:%2").arg(rFilePath).arg(sndFile->errorString()));
         return;
     }
-    currentFileSizeDistributed = 0;
-    currentFileSize = fi.size();
+    fileSizeDistributed = 0;
+    fileSize = fi.size();
 
     sndBlock.clear();
     QDataStream out(&sndBlock,QIODevice::WriteOnly);
 
     //发送文件与工作目录的相对文件路径
-    out<<quint16(0)<<FILE_NAME<<currentFileSize<<rFilePath;
-    sem.acquire(1);
-    socket->write(sndBlock);
-}
-
-void FileSendTask::sendReady()
-{
-    sndBlock.clear();
-    QDataStream out(&sndBlock,QIODevice::WriteOnly);
-
-    //发送文件与工作目录的相对文件路径
-    out<<quint16(0)<<TASK_INFO<<fileNum<<totalSize;
+    out<<quint16(0)<<FILE_NAME<<fileSize<<rFilePath;
     out.device()->seek(0);
     out<<quint16(sndBlock.size()-sizeof(quint16));
 
-    sem.acquire(1);
     socket->write(sndBlock);
+    emit log->logStr(QString("open file:%1").arg(sndFile->fileName()));
+}
+
+FileSendTask::~FileSendTask()
+{
+    sndFile->deleteLater();
+    socket->deleteLater();
 }
 
 

@@ -131,6 +131,9 @@
       </layout>
      </widget>
     </item>
+    <item row="3" column="0">
+     <widget class="QTextEdit" name="edtLog"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -139,7 +142,7 @@
      <x>0</x>
      <y>0</y>
      <width>424</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -152,6 +155,7 @@
      <string>工具</string>
     </property>
     <addaction name="actionOptions"/>
+    <addaction name="actionShowLog"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -171,6 +175,14 @@
    </property>
    <property name="toolTip">
     <string>Options</string>
+   </property>
+  </action>
+  <action name="actionShowLog">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>显示日志</string>
    </property>
   </action>
  </widget>

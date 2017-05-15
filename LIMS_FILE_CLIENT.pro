@@ -13,8 +13,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = LIMS_CLIENT_DESKTOP
 TEMPLATE = app
 
-LIBS += D:\Project\Qt\FILE\LIMS_FILE_CLIENT\qrcodelib.lib
-LIBS += D:\Project\Qt\FILE\LIMS_FILE_CLIENT\qrcodelib.dll
+LIBS += C:\Users\choco\Project\Qt\LIMS_FILE_CLIENT\LIMS_FILE_CLIENT\qrcodelib.dll
+LIBS += C:\Users\choco\Project\Qt\LIMS_FILE_CLIENT\LIMS_FILE_CLIENT\qrcodelib.lib
+#LIBS += D:\Project\Qt\FILE\LIMS_FILE_CLIENT\qrcodelib.lib
+#LIBS += D:\Project\Qt\FILE\LIMS_FILE_CLIENT\qrcodelib.dll
+
 
 
 # The following define makes your compiler emit warnings if you use
@@ -37,25 +40,27 @@ SOURCES += main.cpp\
     client.cpp \
     clientmanagement.cpp \
     filemanagement.cpp \
-    filesendtask.cpp \
     settingdialog.cpp \
     signalingparsemodule.cpp \
     filerecvtask.cpp \
-    server.cpp
+    server.cpp \
+    log.cpp \
+    filesendtask.cpp
 
 HEADERS  += mainwindow.h \
     qrcodegenerate.h \
     qrcodedialog.h \
     deviceinfo.h \
-    client.h \
     clientmanagement.h \
     config.h \
     filemanagement.h \
-    filesendtask.h \
     settingdialog.h \
     signalingparsemodule.h \
     server.h \
-    filerecvtask.h
+    filerecvtask.h \
+    log.h \
+    filesendtask.h \
+    client.h
 
 FORMS    += mainwindow.ui \
     qrcodegenerate.ui \

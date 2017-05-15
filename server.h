@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include <QTcpServer>
+#include <QThread>
 #include "filerecvtask.h"
+#include "log.h"
 
 class Server : public QTcpServer
 {
@@ -13,14 +15,16 @@ public:
 
 private:
     FileRecvTask *fileRecvTask;
+    Log* log;
 
 protected:
     void incomingConnection(int socketId);
 
 signals:
-
-public slots:
-    void socketReadyRead();
+    void startTask(int socketId,QThread* thread);
+    void fileRecvOver(QString fileName);
+private slots:
+    void releaseRecvThread(FileRecvTask* task);
 };
 
 #endif // SERVER_H

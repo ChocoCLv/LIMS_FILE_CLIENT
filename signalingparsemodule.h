@@ -21,21 +21,21 @@ class SignalingParseModule : public QObject
     Q_OBJECT
 public:
     explicit SignalingParseModule(QObject *parent = 0);
-    void sendSignaling(QJsonObject s,QHostAddress dst);
+    void sendSignaling(QJsonObject s);
     ~SignalingParseModule();
 
 private:
     QUdpSocket *udpSocket;
+    QHostAddress serverIpAddr;
 
     void processSignaling(QByteArray signaling,QHostAddress addr);
 
     void detectClient();
-    void replyHello(QHostAddress addr);
+    void replyHello();
 
 signals:
-    void clientFound(QHostAddress addr);
-    void tempServerJoin(QHostAddress addr);
-    void pushFile(QString clientIp);
+    void pushFile(QString clientIp,QString fileName);
+    void getTaskInfo(int fileNum,quint64 totalSize);
 
 public slots:
     void processPendingDatagrams();

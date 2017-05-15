@@ -1,67 +1,70 @@
 #ifndef FILESENDTASK_H
 #define FILESENDTASK_H
 
-#include <QRunnable>
 #include <QTcpSocket>
 #include <QList>
 #include <QString>
 #include <QObject>
 #include <QHostAddress>
-#include <QSemaphore>
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
+#include <QDir>
 #include <QDataStream>
+#include <QThread>
 
 #include "config.h"
+#include "log.h"
 
-class Signaling:public QObject
+// 每个发送任务只发送一个文件
+
+class FileSendTask : public QObject
 {
     Q_OBJECT
-signals:
-    oneFileSendOver(quint64 nextFileSize);
-};
-
-class FileSendTask : public QRunnable
-{
 public:
-    FileSendTask();
+    FileSendTask(QObject *parent = 0);
+    ~FileSendTask();
     void setClientIp(QHostAddress ip);
-    void setFileList(QList<QString> list);
-    void connectToClient();
     void setWorkDir(QString dir);
-    void setTotalSize(quint64 size);
-    void updateSendProgress(quint64 numBytes);
-
-    //暴露给client
-    //由于qrunnable不是qobject对象 不能使用connect
-    QTcpSocket  *socket;
-    Signaling   *signaling;
+    void setFileName(QString fn);
 
 private:
+    QTcpSocket  *socket;
     const static quint8 FILE_NAME = 1;
     const static quint8 FILE_DATA = 2;
-    const static quint8 TASK_INFO = 3;
+
+    /**
+     * @brief 本次发送任务的信息
+     */
     QString workDir;
     QHostAddress clientIp;
-    QList<QString> fileList;
-    QFile *currentSendFile;
+
+    QString fileName;
+    QFile *sndFile;
     QByteArray fileBlock;
     QByteArray sndBlock;
 
-    quint64 totalSize;
-    quint16 fileNum;                        //文件总数量
-    int fileDistributedNum;             //已经发送完成的文件数量
-    quint64 currentFileSize;                //当前发送的文件总大小
-    quint64 currentFileSizeDistributed;     //当前文件已经发送的大小
-    quint64 numBytesSend;               //本次write成功的字节数
-    void sendFile(QString filePath);    //发送某个文件
-    void openFileRead(QString rFilePath);
-    void sendReady();
-    QSemaphore sem;
+    quint64 fileSize;                //当前发送的文件总大小
+    quint64 fileSizeDistributed;     //当前文件已经发送的大小
 
-protected:
-    void run();
+    void sendFileData();
+    void openFileRead(QString rFilePath);
+
+    /**
+     * @brief isCurrentFileSendOver
+     * 当上次发送的是文件数据 需要判断当前文件是否发送完成
+     */
+
+    Log* log;
+    const static int DATA_HEADER_SIZE = sizeof(quint16) + sizeof(quint8) + 4;
+
+signals:
+    void taskOver();
+
+public slots:
+    void startTask();//启动发送任务
+    void updateSendProgress(qint64 numBytes);
+    void connectToClient();
 };
 
 #endif // FILESENDTASK_H

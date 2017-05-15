@@ -2,17 +2,6 @@
 
 Client::Client(QObject *parent):QObject(parent)
 {
-    fileNum = 0;
-    fileDistributedNum = 0;
-    currentFileSize = 0;
-    currentFileSizeDistributed = 0;
-
-    isDistributeOver = false;
-}
-
-void Client::setClientIp(QHostAddress ip)
-{
-    clientIp = ip;
 }
 
 void Client::setWorkDir(QString dir)
@@ -20,26 +9,9 @@ void Client::setWorkDir(QString dir)
     workDir = dir;
 }
 
-void Client::setTotalSize(quint64 size)
+void Client::setClientIp(QHostAddress ip)
 {
-    totalSize = size;
-}
-
-
-
-void Client::setServerIp(QHostAddress ip)
-{
-    serverIp = ip;
-}
-
-void Client::setIsDistributeOver(bool isOver)
-{
-    isDistributeOver = isOver;
-}
-
-void Client::setFileList(QList<QString> list)
-{
-    fileList = list;
+    clientIp = ip;
 }
 
 QHostAddress Client::getClientHostAddress()
@@ -47,42 +19,22 @@ QHostAddress Client::getClientHostAddress()
     return clientIp;
 }
 
-void Client::prepareDistribute()
+void Client::pushFile(QString dst, QString fileName)
 {
-    fileSendTask = new FileSendTask();
-    fileSendTask->setClientIp(clientIp);
-    fileSendTask->setFileList(fileList);
+    QHostAddress clientAddr;
+    clientAddr.setAddress(dst);
+
+    FileSendTask* fileSendTask = new FileSendTask();
+    fileSendTask->setClientIp(clientAddr);
+    fileSendTask->setFileName(fileName);
     fileSendTask->setWorkDir(workDir);
-    connect(fileSendTask->socket,SIGNAL(connected()),this,SLOT(startDistribute()));
-    connect(fileSendTask->socket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateSendProgress(quint64)));
-    connect(fileSendTask->signaling,SIGNAL(oneFileSendOver(quint64)),this,SLOT(oneFileDistributedOver(quint64)));
+    QThread *sendThread = new QThread();
+    fileSendTask->moveToThread(sendThread);
+    connect(this,SIGNAL(startTask()),fileSendTask,SLOT(connectToClient()));
+    connect(fileSendTask,SIGNAL(taskOver()),fileSendTask,SLOT(deleteLater()));
+    connect(fileSendTask,SIGNAL(taskOver()),sendThread,SLOT(deleteLater()));
+    connect(fileSendTask,SIGNAL(taskOver()),this,SIGNAL(taskOver()));
+    sendThread->start();
+    emit startTask();
 }
-
-void Client::startDistribute()
-{
-    QThreadPool::globalInstance()->start(fileSendTask);
-}
-
-void Client::updateSendProgress(quint64 numBytes)
-{
-    currentFileSize += numBytes;
-    fileSendTask->updateSendProgress(numBytes);
-}
-
-/**
- * @brief Client::oneFileDistributedOver
- * @param nextFileSize 下一个即将发送的文件的总大小
- * 发送完一个文件时 由filesendtask调用
- */
-void Client::oneFileDistributedOver(quint64 nextFileSize)
-{
-    fileDistributedNum++;
-    if(fileDistributedNum >= fileNum){
-        isDistributeOver = true;
-        return;
-    }
-    currentFileSize = nextFileSize;
-    currentFileSizeDistributed = 0;
-}
-
 
