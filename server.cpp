@@ -8,6 +8,7 @@ Server::Server(QObject *parent) : QTcpServer(parent)
 
 void Server::incomingConnection(int socketId)
 {
+
     emit log->logStr(Log::COMMON_LOG,"accept connection");
     fileRecvTask = new FileRecvTask;
     QThread *recvThread = new QThread;

@@ -35,7 +35,6 @@ void SignalingParseModule::processSignaling(QByteArray signaling, QHostAddress a
 
     if(jpe.error != QJsonParseError::NoError)
     {
-        qDebug()<<jpe.errorString();
         return;
     }
     jo = jd.object();

@@ -14,6 +14,7 @@ void FileRecvTask::startRecvTask(int socketId, QThread *t)
     thread = t;
     socket = new QTcpSocket;
     socket->setSocketDescriptor(socketId);
+    emit log->logStr(socket->peerAddress().toString());
     connect(socket,SIGNAL(readyRead()),this,SLOT(readSocket()));
 }
 
@@ -40,8 +41,6 @@ void FileRecvTask::readSocket()
         return;
     }
     in>>dataType;
-
-    emit log->logStr("get data");
 
     QString filePath;
     QDir fileDir;
@@ -76,12 +75,16 @@ void FileRecvTask::readSocket()
         in>>size;
         fileBlock = in.device()->read(size);
         rcvSize += fileBlock.size();
-        recvFile->write(fileBlock);
+        if(-1 == recvFile->write(fileBlock)){
+            emit log->logStr(Log::COMMON_LOG,recvFile->errorString());
+        }
+
         emit log->logStr(Log::RECV_SIZE,rcvSize);
         emit log->logStr(Log::COMMON_LOG,QString("recv file:%1,has recved %2 bytes").arg(recvFile->fileName()).arg(rcvSize));
         if(rcvSize >= fileSize){
             emit log->logStr(Log::COMMON_LOG,QString("file %1 recv complete").arg(recvFile->fileName()));
             recvFile->close();
+            socket->disconnectFromHost();
             emit taskOver(this);
         }
         break;

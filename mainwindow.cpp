@@ -63,7 +63,6 @@ void MainWindow::showLog(quint8 logType, QVariant logContent)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    qDebug()<<"close event";
     writeSettings();
     event->accept();
 }

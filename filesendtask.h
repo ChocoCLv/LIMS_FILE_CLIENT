@@ -2,14 +2,11 @@
 #define FILESENDTASK_H
 
 #include <QTcpSocket>
-#include <QList>
 #include <QString>
 #include <QObject>
 #include <QHostAddress>
 #include <QFile>
 #include <QFileInfo>
-#include <QDebug>
-#include <QDir>
 #include <QDataStream>
 #include <QThread>
 
@@ -27,6 +24,8 @@ public:
     void setClientIp(QHostAddress ip);
     void setWorkDir(QString dir);
     void setFileName(QString fn);
+    void setThread(QThread* t);
+    QThread * getThread();
 
 private:
     QTcpSocket  *socket;
@@ -43,12 +42,12 @@ private:
     QFile *sndFile;
     QByteArray fileBlock;
     QByteArray sndBlock;
+    QThread *thread;
 
     quint64 fileSize;                //当前发送的文件总大小
     quint64 fileSizeDistributed;     //当前文件已经发送的大小
 
     void sendFileData();
-    void openFileRead(QString rFilePath);
 
     /**
      * @brief isCurrentFileSendOver
@@ -58,12 +57,14 @@ private:
     Log* log;
     const static int DATA_HEADER_SIZE = sizeof(quint16) + sizeof(quint8) + 4;
 
+
 signals:
-    void taskOver();
+    void taskOver(FileSendTask*);
 
 public slots:
-    void startTask();//启动发送任务
+    void startTask(QThread* t);//启动发送任务
     void updateSendProgress(qint64 numBytes);
+    void openFileRead();
     void connectToClient();
 };
 

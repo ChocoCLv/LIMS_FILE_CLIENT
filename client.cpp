@@ -30,11 +30,18 @@ void Client::pushFile(QString dst, QString fileName)
     fileSendTask->setWorkDir(workDir);
     QThread *sendThread = new QThread();
     fileSendTask->moveToThread(sendThread);
-    connect(this,SIGNAL(startTask()),fileSendTask,SLOT(connectToClient()));
-    connect(fileSendTask,SIGNAL(taskOver()),fileSendTask,SLOT(deleteLater()));
-    connect(fileSendTask,SIGNAL(taskOver()),sendThread,SLOT(deleteLater()));
-    connect(fileSendTask,SIGNAL(taskOver()),this,SIGNAL(taskOver()));
+    connect(this,SIGNAL(startTask(QThread*)),fileSendTask,SLOT(startTask(QThread*)));
+    connect(fileSendTask,SIGNAL(taskOver(FileSendTask*)),this,SLOT(releaseThreadResourse(FileSendTask*)));
     sendThread->start();
-    emit startTask();
+    emit startTask(sendThread);
+}
+
+void Client::releaseThreadResourse(FileSendTask *task)
+{
+    QThread *t = task->getThread();
+    t->quit();
+    task->deleteLater();
+    t->deleteLater();
+    emit taskOver();
 }
 

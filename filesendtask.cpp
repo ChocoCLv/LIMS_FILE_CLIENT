@@ -23,9 +23,15 @@ void FileSendTask::setFileName(QString fn)
     fileName = fn;
 }
 
-void FileSendTask::startTask()
+void FileSendTask::startTask(QThread *t)
 {
-    openFileRead(fileName);
+    connectToClient();
+    thread = t;
+}
+
+QThread * FileSendTask::getThread()
+{
+    return thread;
 }
 
 void FileSendTask::updateSendProgress(qint64 numBytes)
@@ -40,9 +46,9 @@ void FileSendTask::sendFileData()
     fileBlock = sndFile->read(SEND_BUFF_SIZE);
     if(fileBlock.size()==0){
         emit log->logStr(QString("file:%1 send complete").arg(sndFile->fileName()));
-
         sndFile->close();
-        emit taskOver();
+        socket->disconnectFromHost();
+        emit taskOver(this);
         return;
     }
     sndBlock.clear();
@@ -50,6 +56,7 @@ void FileSendTask::sendFileData()
     out<<quint16(0)<<FILE_DATA<<fileBlock;
     out.device()->seek(0);
     out<<quint16(sndBlock.size()-sizeof(quint16));
+    fileSizeDistributed += (sndBlock.size() - DATA_HEADER_SIZE);
 
     socket->write(sndBlock);
 }
@@ -57,19 +64,20 @@ void FileSendTask::sendFileData()
 void FileSendTask::connectToClient()
 {
     socket = new QTcpSocket();
-    connect(socket,SIGNAL(connected()),this,SLOT(startTask()));
+    connect(socket,SIGNAL(connected()),this,SLOT(openFileRead()));
     connect(socket,SIGNAL(bytesWritten(qint64)),this,SLOT(updateSendProgress(qint64)));
     socket->connectToHost(clientIp,FILE_PORT_TCP);
+    emit log->logStr("attempt to connect");
 }
 
-void FileSendTask::openFileRead(QString rFilePath)
+void FileSendTask::openFileRead()
 {
-    QString aFilePath = workDir +  rFilePath;
+    QString aFilePath = workDir +  fileName;
     sndFile->setFileName(aFilePath);
     QFileInfo fi = QFileInfo(aFilePath);
 
     if(!sndFile->open(QFile::ReadOnly)){
-        emit log->logStr(QString("open %1,error:%2").arg(rFilePath).arg(sndFile->errorString()));
+        emit log->logStr(QString("open %1,error:%2").arg(fileName).arg(sndFile->errorString()));
         return;
     }
     fileSizeDistributed = 0;
@@ -79,7 +87,7 @@ void FileSendTask::openFileRead(QString rFilePath)
     QDataStream out(&sndBlock,QIODevice::WriteOnly);
 
     //发送文件与工作目录的相对文件路径
-    out<<quint16(0)<<FILE_NAME<<fileSize<<rFilePath;
+    out<<quint16(0)<<FILE_NAME<<fileSize<<fileName;
     out.device()->seek(0);
     out<<quint16(sndBlock.size()-sizeof(quint16));
 

@@ -31,11 +31,13 @@ private:
     QList<QString> currentFileList;
 
 signals:
+    void startTask(QThread*);
     void taskOver();
-    void startTask();
+
 
 public slots:
-   void pushFile(QString dst,QString fileName);
+    void releaseThreadResourse(FileSendTask* task);
+    void pushFile(QString,QString);
 };
 
 #endif // CLIENTINFO_H
