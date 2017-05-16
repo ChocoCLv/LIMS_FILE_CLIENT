@@ -27,7 +27,7 @@ QMap<QString, QQueue*> serverFileMap;
 QList<QString>
 ```
 5. 当服务器得知某个客户端接收文件完成时，即进行服务器分配
-6. 主服务器还需要记录需要某个文件的客户端列表
+6. 主服务器还需要记录需要某个文件的客户端列表，分配服务器时，遍历fileManagemengt中的文件列表，以表项作为键值，从clientFileMap和serverFileMap中取出对应的队列，当队列都不为空时，即从server队列中为client队列分配服务器。（暂时不考虑客户端发送线程的数量，即只要服务器下达命令，临时服务器就推送）
 ```C++
 QMap<QString,QQueue*>clientFileMap;
 ```

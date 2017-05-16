@@ -29,7 +29,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QrcodeDialog *dialog;
+    //QrcodeDialog *dialog;
     SettingDialog *settingDialog;
     ClientManagement *clientManagement;
 
