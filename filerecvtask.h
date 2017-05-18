@@ -49,6 +49,7 @@ signals:
 private slots:
     void startRecvTask(int socketId,QThread *t);
     void readSocket();
+    void socketStateChange(QAbstractSocket::SocketState state);
 };
 
 #endif // FILERECVTASK_H

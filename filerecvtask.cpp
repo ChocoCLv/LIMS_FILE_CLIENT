@@ -6,7 +6,6 @@ FileRecvTask::FileRecvTask(QObject *parent):QObject(parent)
     nextBlockSize = 0;
     fileManagement = FileManagement::getInstance();
     log = Log::getInstance();
-    emit log->logStr(fileManagement->getWorkDirectory());
 }
 
 void FileRecvTask::startRecvTask(int socketId, QThread *t)
@@ -14,8 +13,9 @@ void FileRecvTask::startRecvTask(int socketId, QThread *t)
     thread = t;
     socket = new QTcpSocket;
     socket->setSocketDescriptor(socketId);
-    emit log->logStr(socket->peerAddress().toString());
     connect(socket,SIGNAL(readyRead()),this,SLOT(readSocket()));
+    connect(socket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),
+            this,SLOT(socketStateChange(QAbstractSocket::SocketState));
 }
 
 QThread * FileRecvTask::getThread()
@@ -49,6 +49,7 @@ void FileRecvTask::readSocket()
     {
     case FILE_NAME:
         in>>fileSize>>fileName;
+
         filePath = fileManagement->getWorkDirectory()+fileName;
         fi.setFile(filePath);
         fileDir = QDir(fi.absolutePath());
@@ -63,6 +64,7 @@ void FileRecvTask::readSocket()
         if(!recvFile->open(QFile::WriteOnly)){
             emit log->logStr(Log::COMMON_LOG,QString("cann't open file:%1,error:%2").
                              arg(filePath).arg(recvFile->errorString()));
+            emit taskOver(this);
             return;
         }
         fileManagement->addFilePath(fileName);
@@ -80,7 +82,6 @@ void FileRecvTask::readSocket()
         }
 
         emit log->logStr(Log::RECV_SIZE,rcvSize);
-        emit log->logStr(Log::COMMON_LOG,QString("recv file:%1,has recved %2 bytes").arg(recvFile->fileName()).arg(rcvSize));
         if(rcvSize >= fileSize){
             emit log->logStr(Log::COMMON_LOG,QString("file %1 recv complete").arg(recvFile->fileName()));
             recvFile->close();
@@ -97,3 +98,15 @@ void FileRecvTask::readSocket()
     }
 }
 
+void FileRecvTask::socketStateChange(QAbstractSocket::SocketState state)
+{
+    switch(state)
+    {
+    case QAbstractSocket::ClosingState:
+        emit taskOver(this);
+        break;
+    case QAbstractSocket::UnconnectedState:
+        emit taskOver(this);
+        break;
+    }
+}

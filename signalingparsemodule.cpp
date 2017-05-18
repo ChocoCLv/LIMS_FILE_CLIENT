@@ -5,6 +5,7 @@ SignalingParseModule::SignalingParseModule(QObject *parent) : QObject(parent)
     udpSocket = new QUdpSocket(this);
     udpSocket->bind(CLIENT_SIGNALING_PORT_UDP);
     connect(udpSocket,SIGNAL(readyRead()),this,SLOT(processPendingDatagrams()));
+    log = Log::getInstance();
 }
 
 SignalingParseModule::~SignalingParseModule()
@@ -42,11 +43,14 @@ void SignalingParseModule::processSignaling(QByteArray signaling, QHostAddress a
     if(signalingType == "PUSH_FILE_TO_CLIENT"){
         QString clientIp = jo.find("CLIENT_IP").value().toString();
         QString fileName = jo.find("FILE_NAME").value().toString();
+        emit log->logStr(QString("get signaling:send %1 to %2").
+                         arg(fileName).arg(clientIp));
         emit pushFile(clientIp,fileName);
     }if(signalingType == "ARE_YOU_OK"){
         serverIpAddr = addr;
         int fileNum = jo.find("FILE_NUM").value().toInt();
         quint64 totalSize = jo.find("FILE_TOTAL_SIZE").value().toVariant().toULongLong();
+        emit log->logStr("get hello");
         emit getTaskInfo(fileNum,totalSize);
         replyHello();
     }

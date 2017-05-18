@@ -8,6 +8,7 @@ ClientManagement::ClientManagement(QObject *parent) : QObject(parent)
     server = new Server;
     localClient = new Client;
     localClient->setClientIp(localHostAddr);
+    localClient->setWorkDir(fileManagement->getWorkDirectory());
     connect(localClient,SIGNAL(taskOver()),this,SLOT(oneSendTaskOver()));
     connect(server,SIGNAL(fileRecvOver(QString)),this,SLOT(fileRecvOver(QString)));
     connect(signalingParseModule,SIGNAL(getTaskInfo(int,quint64)),this,SLOT(setTaskInfo(int,quint64)));

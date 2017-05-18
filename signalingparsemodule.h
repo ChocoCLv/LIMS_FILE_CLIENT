@@ -10,6 +10,7 @@
 #include <QDataStream>
 
 #include "config.h"
+#include "log.h"
 
 /**
  * @brief The SignalingParseModule class
@@ -27,6 +28,7 @@ public:
 private:
     QUdpSocket *udpSocket;
     QHostAddress serverIpAddr;
+    Log *log;
 
     void processSignaling(QByteArray signaling,QHostAddress addr);
 

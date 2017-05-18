@@ -10,8 +10,8 @@ void Server::incomingConnection(int socketId)
 {
 
     emit log->logStr(Log::COMMON_LOG,"accept connection");
-    fileRecvTask = new FileRecvTask;
-    QThread *recvThread = new QThread;
+    FileRecvTask *fileRecvTask = new FileRecvTask();
+    QThread *recvThread = new QThread();
     fileRecvTask->moveToThread(recvThread);
     connect(this,SIGNAL(startTask(int,QThread*)),fileRecvTask,SLOT(startRecvTask(int,QThread*)));
     connect(fileRecvTask,SIGNAL(taskOver(FileRecvTask*)),this,SLOT(releaseRecvThread(FileRecvTask*)));
@@ -21,10 +21,8 @@ void Server::incomingConnection(int socketId)
 
 void Server::releaseRecvThread(FileRecvTask *task)
 {
-    QThread * t = task->getThread();
-    t->quit();
+    task->getThread()->quit();
     task->deleteLater();
-    t->deleteLater();
     emit fileRecvOver(task->getFileName());
 }
 

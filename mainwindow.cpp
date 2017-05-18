@@ -82,16 +82,16 @@ void MainWindow::initFileTreeView()
 
 void MainWindow::writeSettings()
 {
-    QSettings settings("UESTC","LIMS FILE CLIENT");
-    settings.setValue("geometry",this->saveGeometry());
-    settings.setValue("work directory",fileManagement->getWorkDirectory());
+     QSettings *settings = new QSettings("config.ini",QSettings::IniFormat);
+    settings->setValue("geometry",this->saveGeometry());
+    settings->setValue("work directory",fileManagement->getWorkDirectory());
 }
 
 void MainWindow::readSettings()
 {
-    QSettings settings("UESTC","LIMS FILE CLIENT");
-    restoreGeometry(settings.value("geometry").toByteArray());
-    fileManagement->setWorkDirectory(settings.value("work directory").toString());
+    QSettings *settings = new QSettings("config.ini",QSettings::IniFormat);
+    restoreGeometry(settings->value("geometry").toByteArray());
+    fileManagement->setWorkDirectory(settings->value("work directory").toString());
 }
 
 void MainWindow::updateFileTreeView()

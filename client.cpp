@@ -2,6 +2,7 @@
 
 Client::Client(QObject *parent):QObject(parent)
 {
+    log = Log::getInstance();
 }
 
 void Client::setWorkDir(QString dir)
@@ -21,6 +22,7 @@ QHostAddress Client::getClientHostAddress()
 
 void Client::pushFile(QString dst, QString fileName)
 {
+    emit log->logStr(QString("prepare send file:%1 to client:%2").arg(fileName).arg(dst));
     QHostAddress clientAddr;
     clientAddr.setAddress(dst);
 
@@ -38,10 +40,8 @@ void Client::pushFile(QString dst, QString fileName)
 
 void Client::releaseThreadResourse(FileSendTask *task)
 {
-    QThread *t = task->getThread();
-    t->quit();
+    task->getThread()->quit();
     task->deleteLater();
-    t->deleteLater();
     emit taskOver();
 }
 

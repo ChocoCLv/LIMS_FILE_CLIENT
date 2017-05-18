@@ -8,6 +8,7 @@
 
 
 #include "filesendtask.h"
+#include "log.h"
 
 /**
  * @brief The ClientInfo class
@@ -27,6 +28,7 @@ public:
 private:
     QString workDir;
     QHostAddress clientIp;
+    Log *log;
 
     QList<QString> currentFileList;
 

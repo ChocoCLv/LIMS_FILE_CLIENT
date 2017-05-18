@@ -14,8 +14,8 @@ public:
     explicit Server(QObject *parent = 0);
 
 private:
-    FileRecvTask *fileRecvTask;
     Log* log;
+    QMap<QString,FileRecvTask*> fileTaskMap;
 
 protected:
     void incomingConnection(int socketId);
