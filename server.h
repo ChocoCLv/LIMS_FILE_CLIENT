@@ -17,6 +17,7 @@ public:
 private:
     Log* log;
     QMap<QString,FileRecvTask*> fileTaskMap;
+    quint64 totalRecvSize;
 
 protected:
     void incomingConnection(int socketId);

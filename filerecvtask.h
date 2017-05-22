@@ -27,7 +27,9 @@ public:
     explicit FileRecvTask(QObject *parent = 0);
     QThread * getThread();
     QString getFileName();
+    quint64 getFileSize();
     QTcpSocket *socket;
+    void setTotalRecvSize(quint64 value);
 
 private:
     const static quint8 FILE_NAME = 1;
@@ -37,6 +39,7 @@ private:
     quint64 fileSize;
     QString fileName;
     quint64 rcvSize;
+    quint64 totalRecvSize;
     QThread *thread;
     QFile *recvFile;
     QByteArray fileBlock;

@@ -8,6 +8,16 @@ FileRecvTask::FileRecvTask(QObject *parent):QObject(parent)
     log = Log::getInstance();
 }
 
+void FileRecvTask::setTotalRecvSize(quint64 value)
+{
+    totalRecvSize = value;
+}
+
+quint64 FileRecvTask::getFileSize()
+{
+    return totalRecvSize;
+}
+
 void FileRecvTask::startRecvTask(int socketId, QThread *t)
 {
     thread = t;
@@ -78,10 +88,11 @@ void FileRecvTask::readSocket()
         in>>size;
         fileBlock = in.device()->read(size);
         rcvSize += fileBlock.size();
+        totalRecvSize += fileBlock.size();
         if(-1 == recvFile->write(fileBlock)){
             emit log->logStr(Log::COMMON_LOG,recvFile->errorString());
         }
-
+        emit log->logStr(Log::TASK_SIZE_RECV,totalRecvSize);
         emit log->logStr(Log::RECV_SIZE,rcvSize);
         if(rcvSize >= fileSize){
             emit log->logStr(Log::COMMON_LOG,QString("file %1 recv complete").arg(recvFile->fileName()));

@@ -100,7 +100,6 @@ FileSendTask::~FileSendTask()
 {
     sndFile->deleteLater();
     socket->deleteLater();
-    socket->deleteLater();
 }
 
 
