@@ -31,6 +31,7 @@ private:
     Log *log;
 
     QList<QString> currentFileList;
+    quint64 taskRecvSize;
 
 signals:
     void startTask(QThread*);

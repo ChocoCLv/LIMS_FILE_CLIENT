@@ -50,7 +50,7 @@ void SignalingParseModule::processSignaling(QByteArray signaling, QHostAddress a
         serverIpAddr = addr;
         int fileNum = jo.find("FILE_NUM").value().toInt();
         quint64 totalSize = jo.find("FILE_TOTAL_SIZE").value().toVariant().toULongLong();
-        emit log->logStr("get hello");
+        emit log->logStr(Log::TASK_TOTAL_SIZE,totalSize);
         emit getTaskInfo(fileNum,totalSize);
         replyHello();
     }

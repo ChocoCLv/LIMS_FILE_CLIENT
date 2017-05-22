@@ -21,6 +21,8 @@ public:
     static const quint8 SEND_FILE_COMPLETE = 9;
     static const quint8 SRC_IP = 10;
     static const quint8 DST_IP = 11;
+    static const quint8 TASK_TOTAL_SIZE = 12;
+    static const quint8 TASK_SIZE_RECV = 13;
 
 private:
     static Log* log;

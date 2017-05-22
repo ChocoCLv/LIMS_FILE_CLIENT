@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();
     updateFileTreeView();
     clientManagement = new ClientManagement(this);
+
+    taskRecvSize = 0;
 }
 
 void MainWindow::showLog(QString l)
@@ -39,6 +41,8 @@ void MainWindow::showLog(quint8 logType, QVariant logContent)
         ui->edtFileNameRecv->setText(logContent.toString());
         break;
     case Log::RECV_SIZE:
+        taskRecvSize += logContent.toInt();
+        ui->pbRecvTotal->setValue(taskRecvSize);
         ui->pbRecv->setValue(logContent.toInt());
         break;
     case Log::FILE_NAME_RECV:
@@ -63,6 +67,9 @@ void MainWindow::showLog(quint8 logType, QVariant logContent)
         break;
     case Log::SRC_IP:
         ui->edtSrcIp->setText(logContent.toString());
+    case Log::TASK_TOTAL_SIZE:
+        taskRecvSize = 0;
+        ui->pbRecvTotal->setMaximum(logContent.toInt());
     default:
         showLog(logContent.toString());
         break;

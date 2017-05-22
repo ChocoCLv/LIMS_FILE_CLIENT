@@ -42,6 +42,8 @@ private:
 
     Log* log;
 
+    quint64 taskRecvSize;
+
 protected:
      void closeEvent(QCloseEvent *event);
 
