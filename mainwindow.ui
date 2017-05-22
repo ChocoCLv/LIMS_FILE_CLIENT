@@ -96,37 +96,60 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>正在下载：</string>
+          <string>正在接收：</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="edtCurrentDownloadFileName">
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="edtFileNameRecv">
          <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QProgressBar" name="progressBarCurrentFile">
+       <item row="0" column="2">
+        <widget class="QProgressBar" name="pbRecv">
          <property name="value">
           <number>0</number>
          </property>
         </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>源IP：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLineEdit" name="edtSrcIp"/>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>总进度：</string>
+          <string>正在发送：</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="3">
-        <widget class="QProgressBar" name="progressBarTotal">
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="edtFileNameSend"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QProgressBar" name="pbSend">
          <property name="value">
           <number>0</number>
          </property>
         </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>目的IP：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="edtDstIp"/>
        </item>
       </layout>
      </widget>

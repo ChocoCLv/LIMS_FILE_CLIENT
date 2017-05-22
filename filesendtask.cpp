@@ -4,7 +4,7 @@ FileSendTask::FileSendTask(QObject *parent) : QObject(parent)
 {
     log = Log::getInstance();
     fileSize = 0;
-    fileSizeDistributed = 0;
+    sndSize = 0;
     sndFile = new QFile;
 }
 
@@ -25,6 +25,7 @@ void FileSendTask::setFileName(QString fn)
 
 void FileSendTask::startTask(QThread *t)
 {
+    emit log->logStr(Log::DST_IP,clientIp.toString());
     connectToClient();
     thread = t;
 }
@@ -54,7 +55,8 @@ void FileSendTask::sendFileData()
     out<<quint16(0)<<FILE_DATA<<fileBlock;
     out.device()->seek(0);
     out<<quint16(sndBlock.size()-sizeof(quint16));
-    fileSizeDistributed += (sndBlock.size() - DATA_HEADER_SIZE);
+    sndSize += (sndBlock.size() - DATA_HEADER_SIZE);
+    emit log->logStr(Log::SEND_SIZE,sndSize);
     socket->write(sndBlock);
 }
 
@@ -76,7 +78,7 @@ void FileSendTask::openFileRead()
         emit log->logStr(QString("open %1,error:%2").arg(fileName).arg(sndFile->errorString()));
         return;
     }
-    fileSizeDistributed = 0;
+    sndSize = 0;
     fileSize = fi.size();
 
     sndBlock.clear();
@@ -86,6 +88,9 @@ void FileSendTask::openFileRead()
     out<<quint16(0)<<FILE_NAME<<fileSize<<fileName;
     out.device()->seek(0);
     out<<quint16(sndBlock.size()-sizeof(quint16));
+
+    emit log->logStr(Log::FILE_NAME_SEND,fileName);
+    emit log->logStr(Log::FILE_SIZE_SEND,fileSize);
 
     socket->write(sndBlock);
     emit log->logStr(QString("open file:%1").arg(sndFile->fileName()));

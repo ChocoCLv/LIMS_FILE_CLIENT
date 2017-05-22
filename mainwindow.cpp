@@ -27,7 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::showLog(QString l)
 {
-    showLog(Log::COMMON_LOG,l);
+    QTime time = QTime::currentTime();
+    ui->edtLog->append(time.toString(Qt::TextDate)+"  "+l);
 }
 
 void MainWindow::showLog(quint8 logType, QVariant logContent)
@@ -35,28 +36,35 @@ void MainWindow::showLog(quint8 logType, QVariant logContent)
     switch(logType)
     {
     case Log::RECEIVE_FILE_COMPLETE:
-        ui->edtCurrentDownloadFileName->setText(logContent.toString());
+        ui->edtFileNameRecv->setText(logContent.toString());
         break;
     case Log::RECV_SIZE:
-        ui->progressBarCurrentFile->setValue(logContent.toInt());
+        ui->pbRecv->setValue(logContent.toInt());
         break;
-    case Log::FILE_NAME:
-        ui->edtCurrentDownloadFileName->setText(logContent.toString());
+    case Log::FILE_NAME_RECV:
+        ui->edtFileNameRecv->setText(logContent.toString());
         break;
-    case Log::FILE_SIZE:
-        ui->progressBarCurrentFile->setMaximum(logContent.toInt());
+    case Log::FILE_SIZE_RECV:
+        ui->pbRecv->setMaximum(logContent.toInt());
         break;
     case Log::COMMON_LOG:
-        ui->edtLog->append(logContent.toString());
+        showLog(logContent.toString());
         break;
-    case Log::TOTAL_SIZE:
-        ui->progressBarTotal->setMaximum(logContent.toInt());
+    case Log::FILE_NAME_SEND:
+        ui->edtFileNameSend->setText(logContent.toString());
         break;
-    case Log::TOTAL_SIZE_RECV:
-        ui->progressBarTotal->setValue(logContent.toInt());
+    case Log::FILE_SIZE_SEND:
+        ui->pbSend->setMaximum(logContent.toInt());
         break;
+    case Log::SEND_SIZE:
+        ui->pbSend->setValue(logContent.toInt());
+    case Log::DST_IP:
+        ui->edtDstIp->setText(logContent.toString());
+        break;
+    case Log::SRC_IP:
+        ui->edtSrcIp->setText(logContent.toString());
     default:
-        ui->edtLog->append(logContent.toString());
+        showLog(logContent.toString());
         break;
     }
 }

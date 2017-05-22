@@ -7,6 +7,7 @@
 #include <QDirModel>
 #include <QDir>
 #include <QModelIndex>
+#include <QTime>
 
 #include "filemanagement.h"
 #include "clientmanagement.h"

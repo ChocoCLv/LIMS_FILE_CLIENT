@@ -13,8 +13,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = LIMS_CLIENT_DESKTOP
 TEMPLATE = app
 
-LIBS += C:\Users\choco\Project\Qt\LIMS_FILE_CLIENT\LIMS_FILE_CLIENT\qrcodelib.dll
-LIBS += C:\Users\choco\Project\Qt\LIMS_FILE_CLIENT\LIMS_FILE_CLIENT\qrcodelib.lib
+#LIBS += C:\Users\choco\Project\Qt\LIMS_FILE_CLIENT\LIMS_FILE_CLIENT\qrcodelib.dll
+#LIBS += C:\Users\choco\Project\Qt\LIMS_FILE_CLIENT\LIMS_FILE_CLIENT\qrcodelib.lib
 #LIBS += D:\Project\Qt\FILE\LIMS_FILE_CLIENT\qrcodelib.lib
 #LIBS += D:\Project\Qt\FILE\LIMS_FILE_CLIENT\qrcodelib.dll
 

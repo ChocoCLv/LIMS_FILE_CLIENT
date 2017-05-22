@@ -10,13 +10,18 @@ class Log : public QObject
     Q_OBJECT
 public:
     static Log* getInstance();
-    static const quint8 FILE_SIZE = 1;
-    static const quint8 FILE_NAME = 2;
+    static const quint8 FILE_SIZE_RECV = 1;
+    static const quint8 FILE_NAME_RECV = 2;
     static const quint8 RECV_SIZE = 3;
     static const quint8 RECEIVE_FILE_COMPLETE = 4;
     static const quint8 COMMON_LOG = 5;
-    static const quint8 TOTAL_SIZE = 6;
-    static const quint8 TOTAL_SIZE_RECV = 7;
+    static const quint8 FILE_SIZE_SEND = 6;
+    static const quint8 FILE_NAME_SEND = 7;
+    static const quint8 SEND_SIZE = 8;
+    static const quint8 SEND_FILE_COMPLETE = 9;
+    static const quint8 SRC_IP = 10;
+    static const quint8 DST_IP = 11;
+
 private:
     static Log* log;
     explicit Log(QObject *parent = 0);

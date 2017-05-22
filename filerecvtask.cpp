@@ -14,8 +14,9 @@ void FileRecvTask::startRecvTask(int socketId, QThread *t)
     socket = new QTcpSocket;
     socket->setSocketDescriptor(socketId);
     connect(socket,SIGNAL(readyRead()),this,SLOT(readSocket()));
-    connect(socket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-            this,SLOT(socketStateChange(QAbstractSocket::SocketState));
+    //connect(socket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),
+      //      this,SLOT(socketStateChange(QAbstractSocket::SocketState)));
+    emit log->logStr(Log::SRC_IP,socket->peerAddress().toString());
 }
 
 QThread * FileRecvTask::getThread()
@@ -68,8 +69,8 @@ void FileRecvTask::readSocket()
             return;
         }
         fileManagement->addFilePath(fileName);
-        emit log->logStr(Log::FILE_NAME,recvFile->fileName());
-        emit log->logStr(Log::FILE_SIZE,fileSize);
+        emit log->logStr(Log::FILE_NAME_RECV,recvFile->fileName());
+        emit log->logStr(Log::FILE_SIZE_RECV,fileSize);
         break;
     case FILE_DATA:
         fileBlock.clear();

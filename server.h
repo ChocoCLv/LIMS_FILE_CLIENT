@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QThread>
+#include <QDebug>
 #include "filerecvtask.h"
 #include "log.h"
 
