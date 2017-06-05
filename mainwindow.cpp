@@ -28,7 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::showLog(QString l)
 {
     QTime time = QTime::currentTime();
-    ui->edtLog->append(time.toString(Qt::TextDate)+"  "+l);
+    QString textLog = time.toString(Qt::TextDate)+"  "+l;
+    ui->edtLog->append(textLog);
+    log->writeLog(textLog);
 }
 
 void MainWindow::showLog(quint8 logType, QVariant logContent)

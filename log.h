@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <QFile>
+#include <QTextStream>
 
 class Log : public QObject
 {
@@ -24,9 +26,12 @@ public:
     static const quint8 TASK_TOTAL_SIZE = 12;
     static const quint8 TASK_SIZE_RECV = 13;
 
+    void writeLog(QString l);
+
 private:
     static Log* log;
     explicit Log(QObject *parent = 0);
+    QFile *file;
     ~Log();
 
 signals:

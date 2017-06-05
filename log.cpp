@@ -4,7 +4,11 @@ Log* Log::log = NULL;
 
 Log::Log(QObject *parent) : QObject(parent)
 {
-
+    file = new QFile("log.txt");
+    if(!file->open(QIODevice::WriteOnly|QIODevice::Text )){
+        emit logStr(file->errorString());
+        file = NULL;
+    }
 }
 
 Log* Log::getInstance()
@@ -18,4 +22,10 @@ Log* Log::getInstance()
 Log::~Log()
 {
     delete log;
+}
+
+void Log::writeLog(QString l)
+{
+    QTextStream in(file);
+    in<<l<<endl;
 }
